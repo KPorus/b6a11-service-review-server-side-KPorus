@@ -4,10 +4,14 @@ const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
-
-
 const app = express();
 const port = process.env.PORT || 5000;
+
+// fun part
+app.use((req, res, next) => {
+    console.log(req.path, "I am watching you.")
+    next();
+})
 
 // middle wares
 app.use(cors());
@@ -20,7 +24,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const workCollection = client.db('photographer').collection('work');
-
+        const homeCollection = client.db('photographer').collection('home-part-service');
+        // work data load
         app.get('/work', async (req, res) => {
             const query = {}
             const cursor = workCollection.find(query);
@@ -28,13 +33,11 @@ async function run() {
             res.send(work);
         });
 
-        app.use((req, res, next) => {
-            console.log(req.path, "I am watching you.")
-            next();
-        })
-
-        app.get('/', (req, res) => {
-            res.send(' server is running')
+        app.get('/', async (req, res) => {
+            const query = {}
+            const cursor = homeCollection.find(query);
+            const home = await cursor.toArray();
+            res.send(home);
         })
 
 
