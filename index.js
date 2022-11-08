@@ -25,6 +25,12 @@ async function run() {
     try {
         const workCollection = client.db('photographer').collection('work');
         const homeCollection = client.db('photographer').collection('home-part-service');
+        const serviceCollection = client.db('photographer').collection('services');
+
+        app.get("/",(req,res)=>
+        {
+            res.send("I am watching. caught you")
+        })
         // work data load
         app.get('/work', async (req, res) => {
             const query = {}
@@ -32,14 +38,43 @@ async function run() {
             const work = await cursor.toArray();
             res.send(work);
         });
-
-        app.get('/', async (req, res) => {
+        // home service part
+        app.get('/homeService', async (req, res) => {
             const query = {}
             const cursor = homeCollection.find(query);
             const home = await cursor.toArray();
             res.send(home);
         })
+        
+        // checkOut part
+        app.get('/homeService/:id',async(req,res)=>
+        {
+            const id = req.params.id;
+            console.log(req.params.id)
+            const query = {_id:ObjectId(id)}
+            const checkOut = await homeCollection.findOne(query);
+            console.log(checkOut)
+            res.send(checkOut);
+        })
 
+        // services
+        app.get('/services', async (req, res) => {
+            const query = {}
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
+        })
+
+        app.get('/services/:id',async(req,res)=>
+        {
+            const id = req.params.id;
+            console.log(req.params.id)
+            const query = {_id:ObjectId(id)}
+            console.log(query)
+            const serviceCheckout = await serviceCollection.findOne(query);
+            console.log(serviceCheckout)
+            res.send(serviceCheckout);
+        })
 
     }
     finally {
