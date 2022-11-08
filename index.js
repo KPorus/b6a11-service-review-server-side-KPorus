@@ -57,7 +57,7 @@ async function run() {
             console.log(checkOut)
             res.send(checkOut);
         })
-
+        // order post
         app.post('/orders',async(req,res)=>
         {
             const order = req.body;
@@ -66,6 +66,24 @@ async function run() {
             res.send(result);
         })
 
+        // order get 
+        app.get('/orders', async (req, res) => {
+            // const decoded = req.decoded;
+            
+            // if(decoded.email !== req.query.email){
+            //     res.status(403).send({message: 'unauthorized access'})
+            // }
+
+            let query = {};
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = orderCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
         // services
         app.get('/services', async (req, res) => {
             const query = {}
