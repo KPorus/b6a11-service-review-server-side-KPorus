@@ -26,6 +26,7 @@ async function run() {
         const workCollection = client.db('photographer').collection('work');
         const homeCollection = client.db('photographer').collection('home-part-service');
         const serviceCollection = client.db('photographer').collection('services');
+        const orderCollection = client.db('photographer').collection('orders');
 
         app.get("/",(req,res)=>
         {
@@ -55,6 +56,14 @@ async function run() {
             const checkOut = await homeCollection.findOne(query);
             console.log(checkOut)
             res.send(checkOut);
+        })
+
+        app.post('/orders',async(req,res)=>
+        {
+            const order = req.body;
+            console.log(order)
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
         })
 
         // services
