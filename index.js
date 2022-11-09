@@ -14,7 +14,13 @@ app.use((req, res, next) => {
 })
 
 // middle wares
-app.use(cors());
+const corsOptions ={
+    origin:'*', 
+    credentials:true,    
+    optionSuccessStatus:200,
+ }
+ 
+ app.use(cors(corsOptions))
 app.use(express.json());
 
 
@@ -43,10 +49,8 @@ async function verifyJWT(req, res, next){
 async function run() {
     try {
         const workCollection = client.db('photographer').collection('work');
-        const homeCollection = client.db('photographer').collection('home-part-service');
         const serviceCollection = client.db('photographer').collection('services');
         const orderCollection = client.db('photographer').collection('orders');
-        const reviewCollection = client.db('photographer').collection('userReviews');
 
         app.post('/jwt', (req, res) =>{
             const user = req.body;
@@ -98,6 +102,7 @@ async function run() {
                     email: req.query.email
                 }
             }
+            console.log(req.query.email)
             const cursor = orderCollection.find(query);
             const orders = await cursor.toArray();
             res.send(orders);
@@ -131,7 +136,19 @@ async function run() {
             res.send(serviceCheckout);
         })
 
-     
+        // app.patch('/services/:id', verifyJWT, async (req, res) => {
+        //     const id = req.params.id;
+        //     const review = req.body
+        //     console.log(review)
+        //     const query = { _id: ObjectId(id) }
+        //     const updatedDoc = {
+        //         $set:{
+        //            review: review
+        //         }
+        //     }
+        //     const result = await serviceCollection.updateOne(query, updatedDoc);
+        //     res.send(result);
+        // })
     }
     finally {
 
