@@ -68,23 +68,13 @@ async function run() {
             res.send(work);
         });
         // home service part
-        app.get('/homeService', async (req, res) => {
+        app.get('/homeServices', async (req, res) => {
             const query = {}
             const cursor =  serviceCollection.find(query);
             const home = await cursor.limit(3).toArray();
             res.send(home);
         })
         
-        // checkOut part
-        app.get('/homeService/:id',async(req,res)=>
-        {
-            const id = req.params.id;
-            console.log(req.params.id)
-            const query = {_id:ObjectId(id)}
-            const checkOut = await serviceCollection.findOne(query);
-            console.log(checkOut)
-            res.send(checkOut);
-        })
         // order post
         app.post('/orders',async(req,res)=>
         {
@@ -129,6 +119,7 @@ async function run() {
             res.send(services);
         })
 
+        // checkOut
         app.get('/services/:id',async(req,res)=>
         {
             const id = req.params.id;
