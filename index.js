@@ -24,7 +24,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function verifyJWT(req, res, next){
     const authHeader = req.headers.authorization;
-
+    console.log(authHeader)
     if(!authHeader){
         return res.status(401).send({message: 'unauthorized access'});
     }
@@ -50,7 +50,8 @@ async function run() {
 
         app.post('/jwt', (req, res) =>{
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d'})
+            console.log(user)
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '14d'})
             res.send({token})
         })  
 
@@ -62,15 +63,15 @@ async function run() {
         // work data load
         app.get('/work', async (req, res) => {
             const query = {}
-            const cursor =await workCollection.find(query);
+            const cursor = workCollection.find(query);
             const work = await cursor.toArray();
             res.send(work);
         });
         // home service part
         app.get('/homeService', async (req, res) => {
             const query = {}
-            const cursor = await homeCollection.find(query);
-            const home = await cursor.toArray();
+            const cursor =  serviceCollection.find(query);
+            const home = await cursor.limit(3).toArray();
             res.send(home);
         })
         
@@ -80,7 +81,7 @@ async function run() {
             const id = req.params.id;
             console.log(req.params.id)
             const query = {_id:ObjectId(id)}
-            const checkOut = await homeCollection.findOne(query);
+            const checkOut = await serviceCollection.findOne(query);
             console.log(checkOut)
             res.send(checkOut);
         })
@@ -121,7 +122,7 @@ async function run() {
         })
 
         // services
-        app.get('/services', verifyJWT,async (req, res) => {
+        app.get('/services',async (req, res) => {
             const query = {}
             const cursor = serviceCollection.find(query);
             const services = await cursor.toArray();
