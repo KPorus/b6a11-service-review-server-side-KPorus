@@ -92,7 +92,6 @@ async function run() {
         // order get 
         app.get('/orders',verifyJWT, async (req, res) => {
             const decoded = req.decoded;
-            console.log(decoded)
             if(decoded.email !== req.query.email){
                 return res.status(403).send({message: 'unauthorized access'})
             }
@@ -103,7 +102,6 @@ async function run() {
                     email: req.query.email
                 }
             }
-            console.log(req.query.email)
             const cursor = orderCollection.find(query);
             const orders = await cursor.toArray();
             res.send(orders);
@@ -137,7 +135,7 @@ async function run() {
             res.send(serviceCheckout);
         })
 
-        app.post('/userReview',async(req,res)=>
+        app.post('/userReviews',async(req,res)=>
         {
             const userReview = req.body;
             console.log(userReview)
