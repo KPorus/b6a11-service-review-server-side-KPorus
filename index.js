@@ -51,6 +51,7 @@ async function run() {
         const workCollection = client.db('photographer').collection('work');
         const serviceCollection = client.db('photographer').collection('services');
         const orderCollection = client.db('photographer').collection('orders');
+        const myReviewCollection = client.db('photographer').collection('myReview');
 
         app.post('/jwt', (req, res) =>{
             const user = req.body;
@@ -89,11 +90,11 @@ async function run() {
         })
 
         // order get 
-        app.get('/orders', verifyJWT,async (req, res) => {
+        app.get('/orders',verifyJWT, async (req, res) => {
             const decoded = req.decoded;
-            
+            console.log(decoded)
             if(decoded.email !== req.query.email){
-                res.status(403).send({message: 'unauthorized access'})
+                return res.status(403).send({message: 'unauthorized access'})
             }
 
             let query = {};
@@ -124,7 +125,7 @@ async function run() {
             res.send(services);
         })
 
-        // checkOut
+        // checkOut && userReview
         app.get('/services/:id',async(req,res)=>
         {
             const id = req.params.id;
@@ -136,19 +137,31 @@ async function run() {
             res.send(serviceCheckout);
         })
 
-        // app.patch('/services/:id', verifyJWT, async (req, res) => {
-        //     const id = req.params.id;
-        //     const review = req.body
-        //     console.log(review)
-        //     const query = { _id: ObjectId(id) }
-        //     const updatedDoc = {
-        //         $set:{
-        //            review: review
-        //         }
-        //     }
-        //     const result = await serviceCollection.updateOne(query, updatedDoc);
-        //     res.send(result);
-        // })
+        app.post('/userReview',async(req,res)=>
+        {
+            const userReview = req.body;
+            console.log(userReview)
+             const review = await myReviewCollection.insertOne(userReview);
+            console.log(review)
+            res.send(review);
+        })
+
+        app.get('/userReviews',async(req,res)=>
+        {
+            const query = {}
+             const cursor = myReviewCollection.find(query);
+             const review = await cursor.toArray();
+            console.log(review)
+            res.send(review);
+        })
+
+        app.delete('/userReviews/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await myReviewCollection.deleteOne(query);
+            res.send(result);
+        })
+
     }
     finally {
 
