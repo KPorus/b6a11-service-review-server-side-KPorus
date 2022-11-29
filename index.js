@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, CURSOR_FLAGS } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -151,6 +151,22 @@ async function run() {
              const review = await cursor.toArray();
             console.log(review)
             res.send(review);
+        })
+
+        app.get('/service/reviews/:serviceName',async(req,res)=>
+        {
+            const title = req.params.serviceName
+            console.log(title)
+            const query = {ServiceName: title}
+            const result = await myReviewCollection.find(query).toArray();
+            if(result.length === 1)
+            {
+                let review = result
+                res.send(review);
+            }
+            else{
+                res.send(result)
+            }
         })
 
         app.delete('/userReviews/:id', verifyJWT, async (req, res) => {
